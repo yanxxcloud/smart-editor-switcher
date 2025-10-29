@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>io.yanxxcloud.editorswitcher</id>
     <name>Smart Editor Switcher</name>
-    <vendor email="yanwei@yanxxcloud.cn" url="https://github.com/kcken11">yanxxcloud</vendor>
+    <vendor email="yanwei@yanxxcloud.cn" url="https://github.com/yanxxcloud">yanxxcloud</vendor>
 
     <description><![CDATA[
     <h3>Smart Editor Switcher - 智能编辑器切换工具</h3>
