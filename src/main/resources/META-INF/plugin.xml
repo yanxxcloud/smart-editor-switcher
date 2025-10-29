@@ -5,41 +5,41 @@
     <vendor email="yanwei@yanxxcloud.cn" url="https://github.com/yanxxcloud">yanxxcloud</vendor>
 
     <description><![CDATA[
-    <h3>Smart Editor Switcher - 智能编辑器切换工具</h3>
+    <h3>Smart Editor Switcher - Intelligent Editor Switching Tool</h3>
     
-    <p>一个专业的编辑器切换插件，让您在 JetBrains IDE 和其他主流编辑器之间无缝切换。支持智能光标定位和项目上下文保持。</p>
+    <p>A professional editor switching plugin that enables seamless transitions between JetBrains IDE and other mainstream editors. Features smart cursor positioning and project context preservation.</p>
     
-    <h4>🚀 核心功能</h4>
+    <h4>🚀 Core Features</h4>
     <ul>
-        <li><strong>智能光标定位</strong> - 切换时保持精确的光标位置和行列信息</li>
-        <li><strong>项目上下文保持</strong> - 自动传递当前项目和文件路径</li>
-        <li><strong>一键快速切换</strong> - 支持快捷键和状态栏快速访问</li>
-        <li><strong>自动路径检测</strong> - 智能识别已安装的编辑器路径</li>
-        <li><strong>右键菜单集成</strong> - 在文件和项目视图中快速切换</li>
+        <li><strong>Smart Cursor Positioning</strong> - Maintains precise cursor position and line/column information when switching</li>
+        <li><strong>Project Context Preservation</strong> - Automatically passes current project and file paths</li>
+        <li><strong>One-Click Quick Switching</strong> - Supports keyboard shortcuts and status bar quick access</li>
+        <li><strong>Auto Path Detection</strong> - Intelligently recognizes installed editor paths</li>
+        <li><strong>Right-Click Menu Integration</strong> - Quick switching in file and project views</li>
     </ul>
     
-    <h4>📝 支持的编辑器</h4>
+    <h4>📝 Supported Editors</h4>
     <ul>
         <li>📘 <strong>VS Code</strong> - Microsoft Visual Studio Code</li>
-        <li>🎯 <strong>Cursor</strong> - AI 代码编辑器</li>
-        <li>⚡ <strong>Zed</strong> - 高性能代码编辑器</li>
-        <li>🚀 <strong>Kiro</strong> - AI 驱动的编辑器</li>
-        <li>🎨 <strong>Sublime Text</strong> - 轻量级文本编辑器</li>
-        <li>⚛️ <strong>Atom</strong> - GitHub 开源编辑器</li>
-        <li>📝 <strong>Notepad++</strong> - Windows 文本编辑器</li>
-        <li>🖥️ <strong>Vim/Emacs</strong> - 经典编辑器</li>
+        <li>🎯 <strong>Cursor</strong> - AI Code Editor</li>
+        <li>⚡ <strong>Zed</strong> - High-performance Code Editor</li>
+        <li>🚀 <strong>Kiro</strong> - AI-driven Editor</li>
+        <li>🎨 <strong>Sublime Text</strong> - Lightweight Text Editor</li>
+        <li>⚛️ <strong>Atom</strong> - GitHub Open Source Editor</li>
+        <li>📝 <strong>Notepad++</strong> - Windows Text Editor</li>
+        <li>🖥️ <strong>Vim/Emacs</strong> - Classic Editors</li>
     </ul>
     
-    <h4>⌨️ 快捷键</h4>
+    <h4>⌨️ Keyboard Shortcuts</h4>
     <ul>
-        <li><kbd>Ctrl+Alt+V</kbd> - 切换到 VS Code</li>
-        <li><kbd>Ctrl+Alt+C</kbd> - 切换到 Cursor</li>
-        <li><kbd>Ctrl+Alt+Z</kbd> - 切换到 Zed</li>
-        <li><kbd>Ctrl+Alt+K</kbd> - 切换到 Kiro</li>
-        <li><kbd>Ctrl+Alt+S</kbd> - 切换到 Sublime Text</li>
+        <li><kbd>Ctrl+Alt+V</kbd> - Switch to VS Code</li>
+        <li><kbd>Ctrl+Alt+C</kbd> - Switch to Cursor</li>
+        <li><kbd>Ctrl+Alt+Z</kbd> - Switch to Zed</li>
+        <li><kbd>Ctrl+Alt+K</kbd> - Switch to Kiro</li>
+        <li><kbd>Ctrl+Alt+S</kbd> - Switch to Sublime Text</li>
     </ul>
     
-    <p>在 <strong>Settings → Tools → Smart Editor Switcher</strong> 中配置编辑器路径，或使用自动检测功能。</p>
+    <p>Configure editor paths in <strong>Settings → Tools → Smart Editor Switcher</strong>, or use the auto-detection feature.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
