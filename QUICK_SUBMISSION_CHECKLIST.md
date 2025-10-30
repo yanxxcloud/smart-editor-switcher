@@ -21,7 +21,7 @@ Smart Editor Switcher
 
 **Short Description**:
 ```
-A professional editor switcher plugin for seamless switching between JetBrains IDE and popular external editors with smart cursor positioning.
+A professional editor switcher plugin for seamless switching between JetBrains IDE and popular external editors with smart cursor positioning and project context preservation.
 ```
 
 **Category**: `Tools Integration`

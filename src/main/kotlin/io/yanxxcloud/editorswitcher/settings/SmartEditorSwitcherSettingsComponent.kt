@@ -1,7 +1,7 @@
 package io.yanxxcloud.editorswitcher.settings
 
 import io.yanxxcloud.editorswitcher.services.EditorSwitcherService
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.*
 import javax.swing.JComponent
@@ -41,51 +41,61 @@ class SmartEditorSwitcherSettingsComponent {
 
     init {
         vsCodePathField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                "选择 VS Code 可执行文件",
-                "请选择 VS Code 的可执行文件路径",
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-            )
+            addActionListener {
+                val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+                    .withTitle("选择 VS Code 可执行文件")
+                    .withDescription("请选择 VS Code 的可执行文件路径")
+                com.intellij.openapi.fileChooser.FileChooser.chooseFile(descriptor, null, null) { file ->
+                    text = file.path
+                }
+            }
         }
 
         cursorPathField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                "选择 Cursor 可执行文件",
-                "请选择 Cursor 的可执行文件路径",
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-            )
+            addActionListener {
+                val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+                    .withTitle("选择 Cursor 可执行文件")
+                    .withDescription("请选择 Cursor 的可执行文件路径")
+                com.intellij.openapi.fileChooser.FileChooser.chooseFile(descriptor, null, null) { file ->
+                    text = file.path
+                }
+            }
         }
 
         zedPathField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                "选择 Zed 可执行文件",
-                "请选择 Zed 的可执行文件路径",
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-            )
+            addActionListener {
+                val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+                    .withTitle("选择 Zed 可执行文件")
+                    .withDescription("请选择 Zed 的可执行文件路径")
+                com.intellij.openapi.fileChooser.FileChooser.chooseFile(descriptor, null, null) { file ->
+                    text = file.path
+                }
+            }
         }
 
         kiroPathField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                "选择 Kiro 可执行文件",
-                "请选择 Kiro 编辑器的可执行文件路径",
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-            )
+            addActionListener {
+                val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+                    .withTitle("选择 Kiro 可执行文件")
+                    .withDescription("请选择 Kiro 编辑器的可执行文件路径")
+                com.intellij.openapi.fileChooser.FileChooser.chooseFile(descriptor, null, null) { file ->
+                    text = file.path
+                }
+            }
         }
 
         sublimePathField = TextFieldWithBrowseButton().apply {
-            addBrowseFolderListener(
-                "选择 Sublime Text 可执行文件",
-                "请选择 Sublime Text 的可执行文件路径",
-                null,
-                FileChooserDescriptorFactory.createSingleFileDescriptor()
-            )
+            addActionListener {
+                val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
+                    .withTitle("选择 Sublime Text 可执行文件")
+                    .withDescription("请选择 Sublime Text 的可执行文件路径")
+                com.intellij.openapi.fileChooser.FileChooser.chooseFile(descriptor, null, null) { file ->
+                    text = file.path
+                }
+            }
         }
-
-        panel = panel {
+    
+    panel = panel {
             group("主流编辑器") {
                 row("📘 VS Code 路径:") {
                     cell(vsCodePathField)

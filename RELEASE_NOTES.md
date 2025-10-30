@@ -1,6 +1,23 @@
-# Smart Editor Switcher v1.0.0 发布说明
+# Smart Editor Switcher 发布说明
 
-## 🚀 首次正式发布
+## 🔧 v1.0.1 (2024-10-30)
+
+### 修复和改进
+- **API 兼容性**: 修复了已弃用 API 的使用，提升与新版本 IntelliJ Platform 的兼容性
+- **代码优化**: 
+  - 替换 `FileChooserDescriptorFactory.createSingleFileDescriptor()` 为现代 API
+  - 修复 `StatusBarWidget.MultipleTextValuesPresentation.getPopupStep()` 弃用警告
+  - 优化文件选择器实现，提升用户体验
+- **构建改进**: 解决编译错误，确保插件能够正常构建和发布
+
+### 技术改进
+- 使用 `FileChooserDescriptor` 替代已弃用的工厂方法
+- 添加适当的 `@Deprecated` 注解以保持向后兼容
+- 优化状态栏组件的事件处理
+
+---
+
+## 🚀 v1.0.0 首次正式发布
 
 Smart Editor Switcher 是一个专业的 JetBrains IDE 插件，让您在 IDE 和其他主流编辑器之间无缝切换。支持智能光标定位和项目上下文保持。
 

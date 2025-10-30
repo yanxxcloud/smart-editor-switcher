@@ -23,7 +23,12 @@ class EditorSwitcherStatusBarWidget(project: Project) : EditorBasedWidget(projec
 
     override fun getSelectedValue(): String = "编辑器切换"
 
+    @Deprecated("This method is deprecated and will be removed in future releases")
     override fun getPopupStep(): ListPopup? {
+        return createPopup()
+    }
+
+    private fun createPopup(): ListPopup? {
         val group = EditorSwitcherActionGroup()
         return JBPopupFactory.getInstance().createActionGroupPopup(
             "切换到编辑器",
@@ -35,8 +40,8 @@ class EditorSwitcherStatusBarWidget(project: Project) : EditorBasedWidget(projec
     }
 
     override fun getClickConsumer(): Consumer<MouseEvent>? {
-        return Consumer { mouseEvent ->
-            val popup = getPopupStep()
+        return Consumer { _ ->
+            val popup = createPopup()
             popup?.showInBestPositionFor(com.intellij.openapi.actionSystem.impl.SimpleDataContext.getProjectContext(project))
         }
     }
