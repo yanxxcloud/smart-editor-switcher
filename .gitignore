@@ -60,3 +60,6 @@ temp/
 
 # Plugin specific
 plugin.xml.bak
+
+# Qoder IDE files
+.qoder/

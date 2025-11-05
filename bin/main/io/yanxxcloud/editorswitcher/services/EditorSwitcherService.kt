@@ -6,6 +6,8 @@ import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.util.xmlb.XmlSerializerUtil
+import io.yanxxcloud.editorswitcher.model.CustomEditorConfig
+import io.yanxxcloud.editorswitcher.model.ValidationResult
 import java.io.File
 
 @State(
@@ -23,6 +25,9 @@ class EditorSwitcherService : PersistentStateComponent<EditorSwitcherService> {
     var emacsPath: String = ""
     var cursorPath: String = ""
     var zedPath: String = ""
+    
+    // Custom editors configuration
+    var customEditors: MutableList<CustomEditorConfig> = mutableListOf()
     
     companion object {
         fun getInstance(): EditorSwitcherService = ApplicationManager.getApplication().getService(EditorSwitcherService::class.java)
@@ -260,6 +265,195 @@ class EditorSwitcherService : PersistentStateComponent<EditorSwitcherService> {
             "C:\\Users\\%USERNAME%\\AppData\\Local\\Programs\\Zed\\zed.exe"
         )
         return possiblePaths.firstOrNull { File(it).exists() } ?: ""
+    }
+    
+    // ========== Custom Editor Management ==========
+    
+    /**
+     * Add a new custom editor configuration
+     */
+    fun addCustomEditor(config: CustomEditorConfig): Boolean {
+        if (customEditors.any { it.editorId == config.editorId }) {
+            thisLogger().warn("Custom editor with ID ${config.editorId} already exists")
+            return false
+        }
+        if (!config.isValid()) {
+            thisLogger().warn("Invalid custom editor configuration")
+            return false
+        }
+        customEditors.add(config)
+        thisLogger().info("Added custom editor: ${config.displayName}")
+        return true
+    }
+    
+    /**
+     * Update existing custom editor configuration
+     */
+    fun updateCustomEditor(editorId: String, config: CustomEditorConfig): Boolean {
+        val index = customEditors.indexOfFirst { it.editorId == editorId }
+        if (index == -1) {
+            thisLogger().warn("Custom editor with ID $editorId not found")
+            return false
+        }
+        if (!config.isValid()) {
+            thisLogger().warn("Invalid custom editor configuration")
+            return false
+        }
+        customEditors[index] = config
+        thisLogger().info("Updated custom editor: ${config.displayName}")
+        return true
+    }
+    
+    /**
+     * Delete custom editor
+     */
+    fun deleteCustomEditor(editorId: String): Boolean {
+        val removed = customEditors.removeIf { it.editorId == editorId }
+        if (removed) {
+            thisLogger().info("Deleted custom editor: $editorId")
+        }
+        return removed
+    }
+    
+    /**
+     * Get custom editor configuration by ID
+     */
+    fun getCustomEditor(editorId: String): CustomEditorConfig? {
+        return customEditors.firstOrNull { it.editorId == editorId }
+    }
+    
+    /**
+     * Get all custom editors
+     */
+    fun getAllCustomEditors(): List<CustomEditorConfig> {
+        return customEditors.toList()
+    }
+    
+    /**
+     * Get all enabled custom editors
+     */
+    fun getEnabledCustomEditors(): List<CustomEditorConfig> {
+        return customEditors.filter { it.enabled }
+    }
+    
+    /**
+     * Switch to a custom editor
+     */
+    fun switchToCustomEditor(
+        editorId: String, 
+        filePath: String?, 
+        projectPath: String?, 
+        line: Int = 1, 
+        column: Int = 1
+    ) {
+        val config = getCustomEditor(editorId)
+        if (config == null) {
+            thisLogger().warn("Custom editor with ID $editorId not found")
+            return
+        }
+        
+        if (!config.enabled) {
+            thisLogger().warn("Custom editor $editorId is disabled")
+            return
+        }
+        
+        try {
+            val command = buildCustomCommand(config, filePath, projectPath, line, column)
+            val processBuilder = ProcessBuilder(command)
+            processBuilder.start()
+            thisLogger().info("Switched to custom editor ${config.displayName} at line $line, column $column")
+        } catch (e: Exception) {
+            thisLogger().error("Failed to switch to custom editor ${config.displayName}", e)
+        }
+    }
+    
+    /**
+     * Build command from template
+     */
+    fun buildCustomCommand(
+        config: CustomEditorConfig,
+        filePath: String?,
+        projectPath: String?,
+        line: Int = 1,
+        column: Int = 1
+    ): List<String> {
+        var template = config.commandTemplate
+        
+        // Replace placeholders
+        template = template.replace("{EXECUTABLE}", config.executablePath)
+        
+        if (projectPath != null) {
+            template = template.replace("{PROJECT}", projectPath)
+        } else {
+            // Remove {PROJECT} placeholder if no project path
+            template = template.replace("{PROJECT}", "")
+        }
+        
+        if (filePath != null) {
+            template = template.replace("{FILE}", filePath)
+            template = template.replace("{LINE}", line.toString())
+            template = template.replace("{COLUMN}", column.toString())
+        } else {
+            // Remove file-related placeholders if no file
+            template = template.replace("{FILE}", "")
+            template = template.replace("{LINE}", "")
+            template = template.replace("{COLUMN}", "")
+        }
+        
+        // Split into command tokens and filter out empty strings
+        val command = template.split(Regex("\\s+"))
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+        
+        return command
+    }
+    
+    /**
+     * Validate command template
+     */
+    fun validateTemplate(template: String): ValidationResult {
+        if (template.isEmpty()) {
+            return ValidationResult.error("Template cannot be empty")
+        }
+        
+        if (!template.contains("{EXECUTABLE}")) {
+            return ValidationResult.error("Template must contain {EXECUTABLE} placeholder")
+        }
+        
+        // Check for valid placeholder syntax
+        val placeholderPattern = Regex("\\{[A-Z_]+\\}")
+        val validPlaceholders = setOf("{EXECUTABLE}", "{PROJECT}", "{FILE}", "{LINE}", "{COLUMN}")
+        
+        placeholderPattern.findAll(template).forEach { match ->
+            if (match.value !in validPlaceholders) {
+                return ValidationResult.error("Unknown placeholder: ${match.value}")
+            }
+        }
+        
+        return ValidationResult.success()
+    }
+    
+    /**
+     * Validate custom editor ID
+     */
+    fun validateEditorId(editorId: String, isNew: Boolean = true): ValidationResult {
+        if (editorId.isEmpty()) {
+            return ValidationResult.error("Editor ID cannot be empty")
+        }
+        
+        if (!editorId.matches(Regex("^[a-zA-Z0-9_]+$"))) {
+            return ValidationResult.error("Editor ID must contain only letters, numbers, and underscores")
+        }
+        
+        if (editorId.length > 50) {
+            return ValidationResult.error("Editor ID must be at most 50 characters")
+        }
+        
+        if (isNew && customEditors.any { it.editorId == editorId }) {
+            return ValidationResult.error("Editor ID already exists")
+        }
+        
+        return ValidationResult.success()
     }
 }
 

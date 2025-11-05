@@ -1,11 +1,16 @@
 package io.yanxxcloud.editorswitcher.settings
 
 import io.yanxxcloud.editorswitcher.services.EditorSwitcherService
+import io.yanxxcloud.editorswitcher.model.CustomEditorConfig
+import io.yanxxcloud.editorswitcher.ui.CustomEditorDialog
 import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.ui.TextFieldWithBrowseButton
 import com.intellij.ui.dsl.builder.*
+import com.intellij.ui.ToolbarDecorator
+import com.intellij.ui.table.JBTable
 import javax.swing.JComponent
 import javax.swing.JPanel
+import javax.swing.table.DefaultTableModel
 
 class SmartEditorSwitcherSettingsComponent {
     
@@ -15,6 +20,14 @@ class SmartEditorSwitcherSettingsComponent {
     private val zedPathField: TextFieldWithBrowseButton
     private val kiroPathField: TextFieldWithBrowseButton
     private val sublimePathField: TextFieldWithBrowseButton
+    
+    // Custom editors table
+    private val customEditorsTableModel = DefaultTableModel(
+        arrayOf("Emoji", "Name", "Enabled", "Editor ID"),
+        0
+    )
+    private val customEditorsTable = JBTable(customEditorsTableModel)
+    private var customEditorsData = mutableListOf<CustomEditorConfig>()
 
     var vsCodePathText: String
         get() = vsCodePathField.text
@@ -38,6 +51,39 @@ class SmartEditorSwitcherSettingsComponent {
 
     val preferredFocusedComponent: JComponent
         get() = vsCodePathField
+    
+    /**
+     * Get custom editors configurations
+     */
+    fun getCustomEditors(): List<CustomEditorConfig> {
+        return customEditorsData.toList()
+    }
+    
+    /**
+     * Set custom editors configurations
+     */
+    fun setCustomEditors(editors: List<CustomEditorConfig>) {
+        customEditorsData.clear()
+        customEditorsData.addAll(editors)
+        refreshCustomEditorsTable()
+    }
+    
+    /**
+     * Refresh custom editors table
+     */
+    private fun refreshCustomEditorsTable() {
+        customEditorsTableModel.setRowCount(0)
+        customEditorsData.forEach { config ->
+            customEditorsTableModel.addRow(
+                arrayOf(
+                    config.iconEmoji.ifEmpty { "-" },
+                    config.displayName,
+                    if (config.enabled) "✓" else "✗",
+                    config.editorId
+                )
+            )
+        }
+    }
 
     init {
         vsCodePathField = TextFieldWithBrowseButton().apply {
@@ -96,61 +142,109 @@ class SmartEditorSwitcherSettingsComponent {
         }
     
     panel = panel {
-            group("主流编辑器") {
-                row("📘 VS Code 路径:") {
+            group("Built-in Editors") {
+                row("📘 VS Code Path:") {
                     cell(vsCodePathField)
                         .align(AlignX.FILL)
-                        .comment("Visual Studio Code 的可执行文件路径")
+                        .comment("Visual Studio Code executable path")
                 }
-                row("🎯 Cursor 路径:") {
+                row("🎯 Cursor Path:") {
                     cell(cursorPathField)
                         .align(AlignX.FILL)
-                        .comment("Cursor AI 编辑器的可执行文件路径")
+                        .comment("Cursor AI editor executable path")
                 }
-                row("⚡ Zed 路径:") {
+                row("⚡ Zed Path:") {
                     cell(zedPathField)
                         .align(AlignX.FILL)
-                        .comment("Zed 编辑器的可执行文件路径")
+                        .comment("Zed editor executable path")
                 }
             }
             
-            group("其他编辑器") {
-                row("🚀 Kiro 路径:") {
+            group("Other Editors") {
+                row("🚀 Kiro Path:") {
                     cell(kiroPathField)
                         .align(AlignX.FILL)
-                        .comment("Kiro AI 编辑器的可执行文件路径")
+                        .comment("Kiro AI editor executable path")
                 }
-                row("🎨 Sublime Text 路径:") {
+                row("🎨 Sublime Text Path:") {
                     cell(sublimePathField)
                         .align(AlignX.FILL)
-                        .comment("Sublime Text 的可执行文件路径")
+                        .comment("Sublime Text executable path")
                 }
             }
             
-            group("使用说明") {
+            group("Custom Editors") {
+                row {
+                    comment("Add your own AI IDEs and editors without code modification")
+                }
+                
+                row {
+                    val tablePanel = ToolbarDecorator.createDecorator(customEditorsTable)
+                        .setAddAction {
+                            val dialog = CustomEditorDialog()
+                            if (dialog.showAndGet()) {
+                                val config = dialog.getEditorConfig()
+                                customEditorsData.add(config)
+                                refreshCustomEditorsTable()
+                            }
+                        }
+                        .setEditAction {
+                            val selectedRow = customEditorsTable.selectedRow
+                            if (selectedRow >= 0 && selectedRow < customEditorsData.size) {
+                                val config = customEditorsData[selectedRow]
+                                val dialog = CustomEditorDialog(config, isEditMode = true)
+                                if (dialog.showAndGet()) {
+                                    customEditorsData[selectedRow] = dialog.getEditorConfig()
+                                    refreshCustomEditorsTable()
+                                }
+                            }
+                        }
+                        .setRemoveAction {
+                            val selectedRow = customEditorsTable.selectedRow
+                            if (selectedRow >= 0 && selectedRow < customEditorsData.size) {
+                                customEditorsData.removeAt(selectedRow)
+                                refreshCustomEditorsTable()
+                            }
+                        }
+                        .createPanel()
+                    
+                    cell(tablePanel)
+                        .align(Align.FILL)
+                }.resizableRow()
+                
+                row {
+                    comment("""
+                        <b>Template Placeholders:</b><br>
+                        {EXECUTABLE} - Editor path | {PROJECT} - Project path | {FILE} - File path<br>
+                        {LINE} - Line number | {COLUMN} - Column number
+                    """.trimIndent())
+                }
+            }
+            
+            group("Usage Instructions") {
                 row {
                     text("""
-                        <p><b>快捷键:</b></p>
+                        <p><b>Shortcuts:</b></p>
                         <ul>
-                        <li>Ctrl+Alt+V: 切换到 VS Code</li>
-                        <li>Ctrl+Alt+C: 切换到 Cursor</li>
-                        <li>Ctrl+Alt+Z: 切换到 Zed</li>
-                        <li>Ctrl+Alt+K: 切换到 Kiro</li>
-                        <li>Ctrl+Alt+S: 切换到 Sublime Text</li>
+                        <li>Ctrl+Alt+V: Switch to VS Code</li>
+                        <li>Ctrl+Alt+C: Switch to Cursor</li>
+                        <li>Ctrl+Alt+Z: Switch to Zed</li>
+                        <li>Ctrl+Alt+K: Switch to Kiro</li>
+                        <li>Ctrl+Alt+S: Switch to Sublime Text</li>
                         </ul>
-                        <p><b>功能特性:</b></p>
+                        <p><b>Features:</b></p>
                         <ul>
-                        <li>智能光标定位 - 保持精确的行列位置</li>
-                        <li>项目上下文保持 - 自动传递项目路径</li>
-                        <li>状态栏快速访问 - 点击底部状态栏切换</li>
-                        <li>右键菜单集成 - 在文件上右键快速切换</li>
+                        <li>Smart cursor positioning - maintains exact line/column</li>
+                        <li>Project context preservation - auto-passes project path</li>
+                        <li>Status bar quick access - click bottom status bar</li>
+                        <li>Context menu integration - right-click on files</li>
                         </ul>
                     """.trimIndent())
                 }
             }
             
             row {
-                button("自动检测路径") {
+                button("Auto-detect Paths") {
                     val service = EditorSwitcherService.getInstance()
                     service.detectEditorPaths()
                     vsCodePathText = service.vsCodePath
