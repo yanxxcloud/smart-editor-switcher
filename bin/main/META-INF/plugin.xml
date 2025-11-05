@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+    <id>io.yanxxcloud.editorswitcher</id>
+    <name>Smart Editor Switcher</name>
+    <vendor email="yanwei@yanxxcloud.cn" url="https://github.com/yanxxcloud">yanxxcloud</vendor>
+
+    <description><![CDATA[
+    <h3>Smart Editor Switcher - Intelligent Editor Switching Tool</h3>
+    
+    <p>A professional editor switching plugin that enables seamless transitions between JetBrains IDE and other mainstream editors. Features smart cursor positioning and project context preservation.</p>
+    
+    <h4>🚀 Core Features</h4>
+    <ul>
+        <li><strong>Smart Cursor Positioning</strong> - Maintains precise cursor position and line/column information when switching</li>
+        <li><strong>Project Context Preservation</strong> - Automatically passes current project and file paths</li>
+        <li><strong>One-Click Quick Switching</strong> - Supports keyboard shortcuts and status bar quick access</li>
+        <li><strong>Auto Path Detection</strong> - Intelligently recognizes installed editor paths</li>
+        <li><strong>Right-Click Menu Integration</strong> - Quick switching in file and project views</li>
+    </ul>
+    
+    <h4>📝 Supported Editors</h4>
+    <ul>
+        <li>📘 <strong>VS Code</strong> - Microsoft Visual Studio Code</li>
+        <li>🎯 <strong>Cursor</strong> - AI Code Editor</li>
+        <li>⚡ <strong>Zed</strong> - High-performance Code Editor</li>
+        <li>🚀 <strong>Kiro</strong> - AI-driven Editor</li>
+        <li>🎨 <strong>Sublime Text</strong> - Lightweight Text Editor</li>
+        <li>⚛️ <strong>Atom</strong> - GitHub Open Source Editor</li>
+        <li>📝 <strong>Notepad++</strong> - Windows Text Editor</li>
+        <li>🖥️ <strong>Vim/Emacs</strong> - Classic Editors</li>
+    </ul>
+    
+    <h4>⌨️ Keyboard Shortcuts</h4>
+    <ul>
+        <li><kbd>Ctrl+Alt+V</kbd> - Switch to VS Code</li>
+        <li><kbd>Ctrl+Alt+C</kbd> - Switch to Cursor</li>
+        <li><kbd>Ctrl+Alt+Z</kbd> - Switch to Zed</li>
+        <li><kbd>Ctrl+Alt+K</kbd> - Switch to Kiro</li>
+        <li><kbd>Ctrl+Alt+S</kbd> - Switch to Sublime Text</li>
+    </ul>
+    
+    <p>Configure editor paths in <strong>Settings → Tools → Smart Editor Switcher</strong>, or use the auto-detection feature.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- IDE version compatibility -->
+    <idea-version since-build="232" until-build="252.*"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable 
+            parentId="tools" 
+            instance="io.yanxxcloud.editorswitcher.settings.SmartEditorSwitcherConfigurable"
+            id="io.yanxxcloud.editorswitcher.settings.SmartEditorSwitcherConfigurable"
+            displayName="Smart Editor Switcher"/>
+        
+        <applicationService 
+            serviceImplementation="io.yanxxcloud.editorswitcher.services.EditorSwitcherService"/>
+            
+        <statusBarWidgetFactory 
+            id="io.yanxxcloud.editorswitcher.statusbar"
+            implementation="io.yanxxcloud.editorswitcher.ui.EditorSwitcherStatusBarWidgetFactory"
+            order="after memoryUsage"/>
+    </extensions>
+
+    <actions>
+        <group id="SmartEditorSwitcher.MainGroup" text="Switch Editor" description="Switch to different editors">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            
+            <action id="SmartEditorSwitcher.SwitchToVSCode" 
+                    class="io.yanxxcloud.editorswitcher.actions.SwitchToVSCodeAction" 
+                    text="Switch to VS Code" 
+                    description="Switch current file to VS Code">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt V"/>
+            </action>
+            
+            <action id="SmartEditorSwitcher.SwitchToCursor" 
+                    class="io.yanxxcloud.editorswitcher.actions.SwitchToCursorAction" 
+                    text="Switch to Cursor" 
+                    description="Switch current file to Cursor">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt C"/>
+            </action>
+            
+            <action id="SmartEditorSwitcher.SwitchToZed" 
+                    class="io.yanxxcloud.editorswitcher.actions.SwitchToZedAction" 
+                    text="Switch to Zed" 
+                    description="Switch current file to Zed">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt Z"/>
+            </action>
+            
+            <action id="SmartEditorSwitcher.SwitchToKiro" 
+                    class="io.yanxxcloud.editorswitcher.actions.SwitchToKiroAction" 
+                    text="Switch to Kiro" 
+                    description="Switch current file to Kiro editor">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt K"/>
+            </action>
+            
+            <action id="SmartEditorSwitcher.SwitchToSublime" 
+                    class="io.yanxxcloud.editorswitcher.actions.SwitchToSublimeAction" 
+                    text="Switch to Sublime Text" 
+                    description="Switch current file to Sublime Text">
+                <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt S"/>
+            </action>
+        </group>
+        
+        <!-- 右键菜单 -->
+        <group id="SmartEditorSwitcher.ContextMenu" text="Open with External Editor" description="Open file with external editor">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+            <separator/>
+            <reference ref="SmartEditorSwitcher.SwitchToVSCode"/>
+            <reference ref="SmartEditorSwitcher.SwitchToCursor"/>
+            <reference ref="SmartEditorSwitcher.SwitchToZed"/>
+            <reference ref="SmartEditorSwitcher.SwitchToKiro"/>
+        </group>
+    </actions>
+</idea-plugin>
